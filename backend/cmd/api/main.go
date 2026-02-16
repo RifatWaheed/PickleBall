@@ -2,21 +2,22 @@ package main
 
 import (
 	"context"
-	"github.com/gin-gonic/gin"
 	"log"
 	"time"
+
+	"pickleBall/configs"
+	"pickleBall/internal/app"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	// 1️⃣ Load configuration
 	cfg := configs.Load()
 
-	// 2️⃣ Set Gin mode (debug/release)
 	if cfg.GinMode != "" {
 		gin.SetMode(cfg.GinMode)
 	}
 
-	// 3️⃣ Create DB connection pool
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -26,18 +27,16 @@ func main() {
 	}
 	defer db.Close()
 
-	// 4️⃣ Create Gin engine
 	router := gin.New()
 	router.Use(gin.Logger(), gin.Recovery())
 
-	// 5️⃣ Register routes (we will pass db soon for auth module)
-	app.RegisterRoutes(router)
+	// ✅ Pass db into routes (we will use it in auth)
+	app.RegisterRoutes(router, db)
 
-	// 6️⃣ Start server
-	address := ":" + cfg.Port
-	log.Printf("server running on %s\n", address)
+	addr := ":" + cfg.Port
+	log.Printf("server running on %s\n", addr)
 
-	if err := router.Run(address); err != nil {
+	if err := router.Run(addr); err != nil {
 		log.Fatalf("server failed to start: %v", err)
 	}
 }
