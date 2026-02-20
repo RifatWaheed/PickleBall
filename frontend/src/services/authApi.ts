@@ -1,9 +1,29 @@
 import { http } from './http';
 
-export type LoginRequest = { email: string; password: string };
-export type LoginResponse = { accessToken: string };
+export type Role = 'USER' | 'ADMIN' | 'SUPER_ADMIN';
 
-export async function login(req: LoginRequest): Promise<LoginResponse> {
+export type MeResponse = {
+  id: string;
+  email: string;
+  role: Role;
+};
+
+export async function login(req: { email: string; password: string }) {
   const { data } = await http.post('/auth/login', req);
-  return data;
+  // expects { accessToken }
+  return data as { accessToken: string };
+}
+
+export async function refresh() {
+  const { data } = await http.post('/auth/refresh');
+  return data as { accessToken: string };
+}
+
+export async function me() {
+  const { data } = await http.get('/auth/me');
+  return data as MeResponse;
+}
+
+export async function logout() {
+  await http.post('/auth/logout');
 }

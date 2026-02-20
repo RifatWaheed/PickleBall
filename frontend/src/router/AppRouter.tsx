@@ -3,6 +3,7 @@ import RootLayout from '@/layouts/RootLayout';
 import HomePage from '@/pages/home/HomePage';
 import LoginPage from '@/pages/auth/LoginPage';
 import NotFoundPage from '@/pages/misc/NotFoundPage';
+import ForbiddenPage from '@/pages/misc/ForbiddenPage';
 
 const router = createBrowserRouter([
   {
@@ -14,6 +15,10 @@ const router = createBrowserRouter([
       { path: 'login', element: <LoginPage /> }
     ],
   },
+  { 
+    path: '/403',
+    element: <ForbiddenPage /> 
+  }
 ]);
 
 export default function AppRouter() {
